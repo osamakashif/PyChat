@@ -4,6 +4,7 @@ __version__ = '1.0.0'
 from PyQt5.QtWidgets import (QWidget, QGridLayout, QLabel, QLineEdit, QPushButton, QMessageBox)
 from PyQt5.QtCore import QCoreApplication
 from connected import Connected
+from client import ChatClient
 
 class Connection(QWidget):
     
@@ -15,13 +16,16 @@ class Connection(QWidget):
         grid = QGridLayout()
         self.setLayout(grid)
 
+        self.ipAdd = QLineEdit()
+        self.port = QLineEdit()
+        self.nickname = QLineEdit()
         grid.addWidget(QLabel('IP Address'), 0, 0)
         grid.addWidget(QLabel('Port'), 1, 0)
         grid.addWidget(QLabel('Nickname'), 2, 0)
 
-        grid.addWidget(QLineEdit(), 0, 1)
-        grid.addWidget(QLineEdit(), 1, 1)
-        grid.addWidget(QLineEdit(), 2, 1)
+        grid.addWidget(self.ipAdd, 0, 1)
+        grid.addWidget(self.port, 1, 1)
+        grid.addWidget(self.nickname, 2, 1)
 
         connectBtn = QPushButton('Connect', self)
         connectBtn.resize(connectBtn.sizeHint())
@@ -46,7 +50,12 @@ class Connection(QWidget):
         else:                               event.ignore()
 
     def toConnected(self):                       # +++
-        self.connected = Connected()
+        ipAddress = self.ipAdd.text()
+        portNumber = int(self.port.text())
+        nick = self.nickname.text()
+        client = ChatClient(nick, portNumber)
+        # client.run()
+        self.connected = Connected(client)
         self.connected.show()
         self.hide()
 

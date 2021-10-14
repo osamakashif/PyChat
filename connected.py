@@ -6,11 +6,11 @@ from PyQt5.QtCore import QCoreApplication
 
 class Connected(QWidget):     
     
-    def __init__(self):
+    def __init__(self, client):
         super().__init__()
-        self.initUI()
+        self.initUI(client)
 
-    def initUI(self):
+    def initUI(self, client):
 
         chat1_1Btn = QPushButton('1:1 Chat', self)
         chat1_1Btn.resize(chat1_1Btn.sizeHint())
@@ -26,7 +26,10 @@ class Connected(QWidget):
         closeBtn.clicked.connect(QCoreApplication.instance().quit)
 
         hbox1 = QHBoxLayout()
-        hbox1.addWidget(QTextEdit())
+        # allClients = client.getAllClients()
+        # print(allClients)
+        connectedClients = QTextEdit()
+        hbox1.addWidget(connectedClients)
         hbox1.addWidget(chat1_1Btn)
 
         vbox1 = QVBoxLayout()
