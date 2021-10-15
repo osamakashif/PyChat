@@ -27,6 +27,12 @@ def send_clients(map, channel):
         clients.append((address, name))
     send(channel, clients)
 
+def send_client_names(map, channel):
+    clients = []
+    for clientItems, (address, name) in map.items():
+        clients.append(name)
+    send(channel, clients)
+
 def receive_clients(clientList, name):
     clientName = name
     clientAddress = ''

@@ -1,8 +1,10 @@
 __author__ = 'Osama Kashif'
 __version__ = '1.0.0'
 
-from PyQt5.QtWidgets import (QWidget, QMessageBox, QLabel, QPushButton, QHBoxLayout, QVBoxLayout, QTextEdit, QLabel)
+import threading
+from PyQt5.QtWidgets import (QWidget, QMessageBox, QLabel, QPushButton, QHBoxLayout, QVBoxLayout, QTextEdit, QLabel, QListWidget)
 from PyQt5.QtCore import QCoreApplication
+from backend.client import ChatClient
 
 class Connected(QWidget):     
     
@@ -23,12 +25,21 @@ class Connected(QWidget):
 
         closeBtn = QPushButton('Close', self)
         closeBtn.resize(closeBtn.sizeHint())
+        # def close():
+        #     QCoreApplication.instance().quit()
+            # threading.Thread(target=client.cleanup).start()
         closeBtn.clicked.connect(QCoreApplication.instance().quit)
+        # closeBtn.pressed(client.cleanup)
 
         hbox1 = QHBoxLayout()
-        # allClients = client.getAllClients()
+        allClients = client.getAllClients()
         # print(allClients)
-        connectedClients = QTextEdit()
+        connectedClients = QListWidget()
+        for name in allClients:
+            if (name == client.name):
+                connectedClients.addItem(name + " (me)")
+            else:
+                connectedClients.addItem(name)
         hbox1.addWidget(connectedClients)
         hbox1.addWidget(chat1_1Btn)
 
@@ -41,7 +52,8 @@ class Connected(QWidget):
         vbox2.addWidget(joinBtn)
 
         hbox2 = QHBoxLayout()
-        hbox2.addWidget(QTextEdit())
+        groupChats = QListWidget()
+        hbox2.addWidget(groupChats)
         hbox2.addLayout(vbox2)
 
         vbox3 = QVBoxLayout()

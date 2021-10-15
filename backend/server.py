@@ -7,7 +7,7 @@ import argparse
 from utils import *
 
 SERVER_HOST = 'localhost'
-
+# python server.py --name=server --port=9988
 
 class ChatServer(object):
     """ An example chat server using select """
@@ -23,7 +23,7 @@ class ChatServer(object):
         # Catch keyboard interrupts
         signal.signal(signal.SIGINT, self.sighandler)
 
-        print(f'Server listening to port: {port} ...')
+        print(f'Server (IP Address: {SERVER_HOST}) listening to port: {port} ...')
 
     def sighandler(self, signum, frame):
         """ Clean up client outputs"""
@@ -93,7 +93,7 @@ class ChatServer(object):
                                     client = self.get_client_name(sock)
                                     client = client.rpartition('@')[0]
                                     print("Sending a list of clients to '"+self.get_client_name(sock)+"'") 
-                                    send_clients(self.clientmap, sock)
+                                    send_client_names(self.clientmap, sock)
                             else:
                                 # Send as new client's message...
                                 msg = f'\n#[{self.get_client_name(sock)}]>> {data}'

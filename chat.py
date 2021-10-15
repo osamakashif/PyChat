@@ -3,7 +3,7 @@ __version__ = '1.0.0'
 
 import sys
 from PyQt5.QtWidgets import (QApplication, QWidget)
-from connection import Connection
+from frontend.connection import Connection
 
 
 class Chat(QWidget):

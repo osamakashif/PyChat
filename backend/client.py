@@ -5,7 +5,9 @@ import signal
 import argparse
 import threading
 
-from utils import *
+# from utils import *
+# from utils import *
+from backend.utils import send, receive, receive_clients
 
 SERVER_HOST = 'localhost'
 

@@ -3,8 +3,9 @@ __version__ = '1.0.0'
 
 from PyQt5.QtWidgets import (QWidget, QGridLayout, QLabel, QLineEdit, QPushButton, QMessageBox)
 from PyQt5.QtCore import QCoreApplication
-from connected import Connected
-from client import ChatClient
+# from connected import Connected
+from backend.client import ChatClient
+from frontend.connected import Connected
 
 class Connection(QWidget):
     
@@ -53,7 +54,10 @@ class Connection(QWidget):
         ipAddress = self.ipAdd.text()
         portNumber = int(self.port.text())
         nick = self.nickname.text()
-        client = ChatClient(nick, portNumber)
+        if (ipAddress == ""):
+            client = ChatClient(nick, portNumber)
+        else:
+            client = ChatClient(nick, portNumber, ipAddress)
         # client.run()
         self.connected = Connected(client)
         self.connected.show()
