@@ -26,7 +26,8 @@ class ChatClient():
         self.connected = False
         self.host = host
         self.port = port
-        
+        self.addr = ""
+        self.portAddr = 0
         # Initial prompt
         self.prompt = f'[{name}@{socket.gethostname()}]> '
         
@@ -42,8 +43,10 @@ class ChatClient():
             data = receive(self.sock)
             
             # Contains client address, set it
-            addr = data.split('CLIENT: ')[1]
-            self.prompt = '[' + '@'.join((self.name, addr)) + ']> '
+            ipAndPort = data.split('CLIENT: ')[1][1:-1].split(", ")
+            self.addr = ipAndPort[0]
+            self.portAddr = int(ipAndPort[1])
+            self.prompt = '[' + '@'.join((self.name, self.addr)) + ']> '
 
             threading.Thread(target=get_and_send, args=(self,)).start()
 

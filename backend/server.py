@@ -8,6 +8,7 @@ from utils import *
 
 SERVER_HOST = 'localhost'
 # python server.py --name=server --port=9988
+# python backend/server.py --name=server --port=9988
 
 class ChatServer(object):
     """ An example chat server using select """
@@ -15,6 +16,7 @@ class ChatServer(object):
     def __init__(self, port, backlog=5):
         self.clients = 0
         self.clientmap = {}
+        self.allClient = {}
         self.outputs = []  # list output sockets
         self.server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
@@ -65,10 +67,11 @@ class ChatServer(object):
 
                     # Compute client name and send back
                     self.clients += 1
-                    send(client, f'CLIENT: {str(address[0])}')
+                    send(client, f'CLIENT: {str(address)}')
                     inputs.append(client)
 
                     self.clientmap[client] = (address, cname)
+                    self.allClient[(address[0], address[1], cname)] = {}
                     # Send joining information to other clients
                     msg = f'\n(Connected: New client ({self.clients}) from {self.get_client_name(client)})'
                     for output in self.outputs:
@@ -93,7 +96,7 @@ class ChatServer(object):
                                     client = self.get_client_name(sock)
                                     client = client.rpartition('@')[0]
                                     print("Sending a list of clients to '"+self.get_client_name(sock)+"'") 
-                                    send_client_names(self.clientmap, sock)
+                                    send_clients(self.allClient, sock)
                             else:
                                 # Send as new client's message...
                                 msg = f'\n#[{self.get_client_name(sock)}]>> {data}'

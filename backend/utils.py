@@ -21,11 +21,20 @@ def receive(channel):
         buf = channel.recv(size - len(buf))
     return pickle.loads(buf)[0]
 
-def send_clients(map, channel):
-    clients = []
-    for clientItems, (address, name) in map.items():
-        clients.append((address, name))
-    send(channel, clients)
+# def send_clients(map, channel):
+#     clients = []
+#     for clientItem in map.items():
+#         clients.append(clientItem)
+#     send(channel, clients)
+
+# def send_clients(map, channel):
+#     clients = []
+#     for clientItems, (address, name) in map.items():
+#         clients.append((address, name))
+#     send(channel, clients)
+
+def send_clients(allClients, channel):
+    send(channel, allClients)
 
 def send_client_names(map, channel):
     clients = []

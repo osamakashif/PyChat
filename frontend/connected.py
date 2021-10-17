@@ -1,10 +1,11 @@
 __author__ = 'Osama Kashif'
 __version__ = '1.0.0'
 
-import threading
-from PyQt5.QtWidgets import (QWidget, QMessageBox, QLabel, QPushButton, QHBoxLayout, QVBoxLayout, QTextEdit, QLabel, QListWidget)
+from PyQt5.QtWidgets import (QWidget, QMessageBox, QLabel, QPushButton, QHBoxLayout, QVBoxLayout, QLabel, QListWidget)
 from PyQt5.QtCore import QCoreApplication
-from backend.client import ChatClient
+from backend.group import Group
+from frontend.clientToClient import ClientToClient
+from frontend.groupChat import GroupChat
 
 class Connected(QWidget):     
     
@@ -13,6 +14,8 @@ class Connected(QWidget):
         self.initUI(client)
 
     def initUI(self, client):
+        
+        self.client = client
 
         chat1_1Btn = QPushButton('1:1 Chat', self)
         chat1_1Btn.resize(chat1_1Btn.sizeHint())
@@ -28,18 +31,23 @@ class Connected(QWidget):
         # def close():
         #     QCoreApplication.instance().quit()
             # threading.Thread(target=client.cleanup).start()
-        closeBtn.clicked.connect(QCoreApplication.instance().quit)
+        closeBtn.clicked.connect(self.close)
         # closeBtn.pressed(client.cleanup)
 
         hbox1 = QHBoxLayout()
-        allClients = client.getAllClients()
+        allClients = self.client.getAllClients()
         # print(allClients)
         connectedClients = QListWidget()
-        for name in allClients:
-            if (name == client.name):
-                connectedClients.addItem(name + " (me)")
+        for (ip, port, cname), clientData in allClients.items():
+            if ((cname == self.client.name) & (ip == self.client.addr.replace("'","")) & (port == self.client.portAddr)):
+                connectedClients.addItem(self.client.name + " (me)")
             else:
-                connectedClients.addItem(name)
+                connectedClients.addItem(cname)
+        # selectedClientIndex = connectedClients.currentIndex()
+        # print(selectedClientIndex)
+        selectedClientIndex = connectedClients.currentRow()
+        # selectedClientIndex = 0
+        chat1_1Btn.clicked.connect(lambda: self.toC2C(list(allClients.items())[selectedClientIndex]))
         hbox1.addWidget(connectedClients)
         hbox1.addWidget(chat1_1Btn)
 
@@ -77,3 +85,16 @@ class Connected(QWidget):
 
         if reply == QMessageBox.Yes:        event.accept()
         else:                               event.ignore()
+
+    def close(self):
+        self.client.cleanup()
+        self.hide()
+        # self.show()
+
+    def toC2C(self, client):
+        self.c2c = ClientToClient(client=client)
+        self.hide()
+        self.c2c.show()
+
+    def toGChat(self, group):
+        gc = GroupChat(group=group)
