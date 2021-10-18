@@ -3,7 +3,7 @@ __version__ = '1.0.0'
 
 from PyQt5.QtWidgets import (QWidget, QGridLayout, QLabel, QLineEdit, QPushButton, QMessageBox)
 from PyQt5.QtCore import QCoreApplication, QThread
-import threading
+import sys
 # from connected import Connected
 from backend.client import ChatClient
 from frontend.connected import Connected
@@ -35,7 +35,7 @@ class Connection(QWidget):
 
         cancelBtn = QPushButton('Cancel', self)
         cancelBtn.resize(cancelBtn.sizeHint())
-        cancelBtn.clicked.connect(QCoreApplication.instance().quit)
+        cancelBtn.clicked.connect(self.close)
 
         grid.addWidget(connectBtn, 3, 2)
         grid.addWidget(cancelBtn, 3, 3)
@@ -59,9 +59,12 @@ class Connection(QWidget):
             client = ChatClient(nick, portNumber)
         else:
             client = ChatClient(nick, portNumber, ipAddress)
-        self.connected = Connected(client)
+        self.connected = Connected(client, self)
         # threading.Thread(target=self.connected.show()).start()
         # threading.Thread(target=self.hide()).start()
+        self.ipAdd.clear()
+        self.port.clear()
+        self.nickname.clear()
         self.connected.show()
         self.hide()
         # threading.Thread(target=self.connected.show()).start()

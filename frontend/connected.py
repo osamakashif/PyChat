@@ -1,22 +1,26 @@
 __author__ = 'Osama Kashif'
 __version__ = '1.0.0'
 
-from PyQt5.QtWidgets import (QWidget, QMessageBox, QLabel, QPushButton, QHBoxLayout, QVBoxLayout, QLabel, QListWidget)
+from PyQt5.QtWidgets import (QWidget, QMessageBox, QLabel,
+                             QPushButton, QHBoxLayout, QVBoxLayout, QLabel, QListWidget)
 from PyQt5.QtCore import QCoreApplication
 from backend.group import Group
 from frontend.clientToClient import ClientToClient
+from frontend.getClients import GetClientThread
 from frontend.groupChat import GroupChat
+import time
 
-class Connected(QWidget):     
-    
-    def __init__(self, client):
+
+class Connected(QWidget):
+
+    def __init__(self, client, previousScreen):
         super().__init__()
-        self.initUI(client)
+        self.initUI(client, previousScreen)
 
-    def initUI(self, client):
-        
+    def initUI(self, client, previousScreen):
+
         self.client = client
-
+        self.connection = previousScreen
         chat1_1Btn = QPushButton('1:1 Chat', self)
         chat1_1Btn.resize(chat1_1Btn.sizeHint())
 
@@ -30,25 +34,33 @@ class Connected(QWidget):
         closeBtn.resize(closeBtn.sizeHint())
         # def close():
         #     QCoreApplication.instance().quit()
-            # threading.Thread(target=client.cleanup).start()
+        # threading.Thread(target=client.cleanup).start()
         closeBtn.clicked.connect(self.close)
         # closeBtn.pressed(client.cleanup)
 
         hbox1 = QHBoxLayout()
-        allClients = self.client.getAllClients()
+        self.clientsList = self.client.getAllClients()
         # print(allClients)
-        connectedClients = QListWidget()
-        for (ip, port, cname), clientData in allClients.items():
-            if ((cname == self.client.name) & (ip == self.client.addr.replace("'","")) & (port == self.client.portAddr)):
-                connectedClients.addItem(self.client.name + " (me)")
-            else:
-                connectedClients.addItem(cname)
+        self.connectedClients = QListWidget()
+        self.clientThread = GetClientThread(self.client)
+        self.clientThread.allClients.connect(self.addClientsToListDynamically)
+        self.clientThread.start()
+        # Send request for list of clientsself.findClientsThread = FindClientsThread(self.client)
+        # self.findClientsThread.clients.connect(self.updateServerInfo)
+        # self.findClientsThread.invite.connect(self.updateServerInfo)
+        # self.findClientsThread.start()
+
+        # for (ip, port, cname), clientData in allClients.items():
+        #     if ((cname == self.client.name) & (ip == self.client.addr.replace("'","")) & (port == self.client.portAddr)):
+        #         connectedClients.addItem(self.client.name + " (me)")
+        #     else:
+        #         connectedClients.addItem(cname)
         # selectedClientIndex = connectedClients.currentIndex()
         # print(selectedClientIndex)
-        selectedClientIndex = connectedClients.currentRow()
+        self.selectedClientIndex = self.connectedClients.currentRow()
         # selectedClientIndex = 0
-        chat1_1Btn.clicked.connect(lambda: self.toC2C(list(allClients.items())[selectedClientIndex]))
-        hbox1.addWidget(connectedClients)
+        chat1_1Btn.clicked.connect(lambda: self.toC2C(list(self.clientsList.items())[self.selectedClientIndex]))
+        hbox1.addWidget(self.connectedClients)
         hbox1.addWidget(chat1_1Btn)
 
         vbox1 = QVBoxLayout()
@@ -78,23 +90,55 @@ class Connected(QWidget):
         vbox.addLayout(hbox3)
 
         self.setLayout(vbox)
-    
+
     def closeEvent(self, event):
         reply = QMessageBox.question(self, 'Message', 'Are you sure to quit?',
-                                    QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
+                                     QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
 
-        if reply == QMessageBox.Yes:        event.accept()
-        else:                               event.ignore()
+        if reply == QMessageBox.Yes:
+            event.accept()
+        else:
+            event.ignore()
+
+    def addClientsToListDynamically(self, allClients):
+        self.clientsList = allClients
+        self.selectedClientIndex = self.connectedClients.currentRow()
+        for (ip, port, cname), clientData in allClients.items():
+            # print(ip, port, cname)
+            if ((cname == self.client.name) & (ip == self.client.addr.replace("'", "")) & (port == self.client.portAddr)):
+                toAdd = cname + " (me)"
+                there = False
+                for i in range(self.connectedClients.count()):
+                    if toAdd == self.connectedClients.item(i).text():
+                        there = True
+                if (not there):
+                    self.connectedClients.addItem(toAdd)
+            else:
+                toAdd = cname
+                there = False
+                for i in range(self.connectedClients.count()):
+                    if toAdd == self.connectedClients.item(i).text():
+                        there = True
+                if (not there):
+                    self.connectedClients.addItem(toAdd)
 
     def close(self):
+        self.clientThread.stop()
+        time.sleep(0.5)
         self.client.cleanup()
         self.hide()
-        # self.show()
+        self.connection.show()
 
     def toC2C(self, client):
-        self.c2c = ClientToClient(client=client)
+        self.clientThread.stop()
+        time.sleep(0.5)
+        self.c2c = ClientToClient(client, self)
         self.hide()
         self.c2c.show()
 
     def toGChat(self, group):
-        gc = GroupChat(group=group)
+        self.clientThread.stop()
+        time.sleep(0.5)
+        self.gc = GroupChat(group)
+        self.hide()
+        self.gc.show()

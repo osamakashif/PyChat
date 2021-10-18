@@ -73,9 +73,9 @@ class ChatServer(object):
                     self.clientmap[client] = (address, cname)
                     self.allClient[(address[0], address[1], cname)] = {}
                     # Send joining information to other clients
-                    msg = f'\n(Connected: New client ({self.clients}) from {self.get_client_name(client)})'
-                    for output in self.outputs:
-                        send(output, msg)
+                    # msg = f'\n(Connected: New client ({self.clients}) from {self.get_client_name(client)})'
+                    # for output in self.outputs:
+                    #     send(output, msg)
                     self.outputs.append(client)
 
                 # elif sock == sys.stdin:
@@ -95,7 +95,7 @@ class ChatServer(object):
                                 if (data == True):
                                     client = self.get_client_name(sock)
                                     client = client.rpartition('@')[0]
-                                    print("Sending a list of clients to '"+self.get_client_name(sock)+"'") 
+                                    # print("Sending a list of clients to '"+self.get_client_name(sock)+"'") 
                                     send_clients(self.allClient, sock)
                             else:
                                 # Send as new client's message...
@@ -113,10 +113,10 @@ class ChatServer(object):
                             self.outputs.remove(sock)
 
                             # Sending client leaving information to others
-                            msg = f'\n(Now hung up: Client from {self.get_client_name(sock)})'
+                            # msg = f'\n(Now hung up: Client from {self.get_client_name(sock)})'
 
-                            for output in self.outputs:
-                                send(output, msg)
+                            # for output in self.outputs:
+                            #     send(output, msg)
                     except socket.error as e:
                         # Remove
                         inputs.remove(sock)

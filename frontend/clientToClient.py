@@ -5,14 +5,15 @@ from PyQt5.QtWidgets import (QWidget, QLineEdit, QLabel, QPushButton, QHBoxLayou
 
 class ClientToClient(QWidget):     
     
-    def __init__(self, client):
+    def __init__(self, client, previousScreen):
         super().__init__()
-        self.initUI(client)
+        self.initUI(client, previousScreen)
 
-    def initUI(self, client):
-
-        print("Client:")
-        print(client)
+    def initUI(self, client, previousScreen):
+        self.connected = previousScreen
+        self.client = client
+        # print("Client:")
+        # print(client)
         # chat1_1Btn = QPushButton('1:1 Chat', self)
         # chat1_1Btn.resize(chat1_1Btn.sizeHint())
         sendBtn = QPushButton('Send', self)
@@ -35,3 +36,7 @@ class ClientToClient(QWidget):
         vbox.addWidget(closeBtn)
 
         self.setLayout(vbox)
+
+    def close(self):
+        self.hide()
+        self.connected.show()
