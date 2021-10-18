@@ -13,12 +13,6 @@ SERVER_HOST = 'localhost'
 
 stop_thread = False
 
-def get_and_send(client):
-    while not stop_thread:
-        data = sys.stdin.readline().strip()
-        if data:
-            send(client.sock, data)
-
 class ChatClient():
     """ A command line chat client using select """
     def __init__(self, name, port, host=SERVER_HOST):
@@ -28,8 +22,6 @@ class ChatClient():
         self.port = port
         self.addr = ""
         self.portAddr = 0
-        # Initial prompt
-        self.prompt = f'[{name}@{socket.gethostname()}]> '
         
         # Connect to server at port
         try:
@@ -46,9 +38,6 @@ class ChatClient():
             ipAndPort = data.split('CLIENT: ')[1][1:-1].split(", ")
             self.addr = ipAndPort[0]
             self.portAddr = int(ipAndPort[1])
-            self.prompt = '[' + '@'.join((self.name, self.addr)) + ']> '
-
-            threading.Thread(target=get_and_send, args=(self,)).start()
 
         except socket.error as e:
             print(f'Failed to connect to chat server @ port {self.port}')
