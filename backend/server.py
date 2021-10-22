@@ -17,6 +17,8 @@ class ChatServer(object):
         self.clients = 0
         self.clientmap = {}
         self.allClient = {}
+        self.groups = 0
+        self.groupOwners = {}
         self.outputs = []  # list output sockets
         self.server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
@@ -71,7 +73,8 @@ class ChatServer(object):
                     inputs.append(client)
 
                     self.clientmap[client] = (address, cname)
-                    self.allClient[(address[0], address[1], cname)] = {}
+                    self.allClient[(address[0], address[1], cname)] = []
+                    self.groupOwners[(address[0], address[1], cname)] = []
                     # Send joining information to other clients
                     # msg = f'\n(Connected: New client ({self.clients}) from {self.get_client_name(client)})'
                     # for output in self.outputs:
@@ -91,12 +94,31 @@ class ChatServer(object):
                     try:
                         data = receive(sock)
                         if data:
-                            if type(data) == bool:
-                                if (data == True):
-                                    client = self.get_client_name(sock)
-                                    client = client.rpartition('@')[0]
-                                    # print("Sending a list of clients to '"+self.get_client_name(sock)+"'") 
+                            # if type(data) == bool:
+                                
+                            if type(data) == int:
+                                if (data == 2):
+                                    # client = self.get_client_name(sock)
+                                    # client = client.rpartition('@')[0]
+                                    # print("Sending a list of clients to '"+self.get_client_name(sock)+"'")
+                                    # send([self.allClient, self.groupOwners], sock)
                                     send_clients(self.allClient, sock)
+                                if (data == 3):
+                                    self.groups = self.groups + 1
+                                    clientInfo = self.clientmap[sock]
+                                    self.allClient[(clientInfo[0][0], clientInfo[0][1], clientInfo[1])].append(self.groups)
+                                    self.groupOwners[(clientInfo[0][0], clientInfo[0][1], clientInfo[1])].append(self.groups)
+                                if (data == 4):
+                                    send_clients(self.groupOwners, sock)
+                                if type(data) == list:
+                                    if data[0] == 0:
+                                        send(data[1]. data[2])
+                                    if data[0] == 1:
+                                        send
+                                    if data[0] == 2:
+                                        self.allClient[data[1]].append(data[2])
+                                        # clientInfo = data[1]
+                                        # self.allClient[(clientInfo[0][0], clientInfo[0][1], clientInfo[1])].append(self.groups)
                             else:
                                 # Send as new client's message...
                                 msg = f'\n#[{self.get_client_name(sock)}]>> {data}'

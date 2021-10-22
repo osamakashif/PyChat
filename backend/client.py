@@ -48,9 +48,17 @@ class ChatClient():
         self.sock.close()
     
     def getAllClients(self):
-        send(self.sock, True)
+        send(self.sock, 2)
         data = receive(self.sock)
         return data
+
+    def getAllGroups(self):
+        send(self.sock, 4)
+        data = receive(self.sock)
+        return data
+
+    def createGroup(self):
+        send(self.sock, 3)
 
     def run(self):
         """ Chat client main loop """

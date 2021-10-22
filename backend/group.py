@@ -3,12 +3,29 @@ __version__ = '1.0.0'
 
 class Group():
 
-    def __init__(self, id, name, startingClient):
+    # def __init__(self, id, name, startingClient):
+    #     self.id = id
+    #     self.name = name
+    #     self.host = startingClient
+    #     self.startingClient = startingClient
+    #     self.members = [startingClient]
+
+    # def addMember(self, client):
+    #     self.members.append(client)
+
+    # def removeMember(self, client):
+    #     self.members.remove(client)
+
+    # def getMembers(self):
+    #     return self.members
+    
+    # def getFullName(self):
+    #     return (self.name + " by " + self.startingClient)
+    def __init__(self, id, startingClientName):
         self.id = id
-        self.name = name
-        self.host = startingClient
-        self.startingClient = startingClient
-        self.members = [startingClient]
+        self.host = startingClientName
+        # self.startingClient = startingClient
+        # self.members = [startingClient]
 
     def addMember(self, client):
         self.members.append(client)
@@ -20,7 +37,8 @@ class Group():
         return self.members
     
     def getFullName(self):
-        return (self.name + " by " + self.startingClient)
+        return ("Room " + str(self.id) + " by " + self.host)
+        # return (self.name + " by " + self.startingClient)
 
     # def getMemberNames(self):
     #     names = []

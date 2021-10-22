@@ -27,9 +27,9 @@ class GroupChat(QWidget):
         hbox1.addWidget(sendBtn)
         vbox1 = QVBoxLayout()
         chatHistory = QTextEdit()
-        vbox1.addWidget(QLabel(group.fullname()))
+        vbox1.addWidget(QLabel(group.getFullName()))
         vbox1.addWidget(chatHistory)
-        vbox1.addWidget(hbox1)
+        vbox1.addLayout(hbox1)
         vbox1.addWidget(closeBtn)
 
         vbox2 = QVBoxLayout()
@@ -42,7 +42,7 @@ class GroupChat(QWidget):
         vbox2.addWidget(inviteBtn)
 
         hbox2 = QHBoxLayout()
-        hbox2.addWidget(vbox1)
-        hbox2.addWidget(vbox2)
+        hbox2.addLayout(vbox1)
+        hbox2.addLayout(vbox2)
 
         self.setLayout(hbox2)
