@@ -1,14 +1,10 @@
 __author__ = 'Osama Kashif'
 __version__ = '1.0.0'
 
-from PyQt5.QtWidgets import (QWidget, QMessageBox, QLabel,
-                             QPushButton, QHBoxLayout, QVBoxLayout, QLabel, QListWidget)
-from PyQt5.QtCore import QCoreApplication
-from PyQt5.sip import setdeleted
-from backend.group import Group
+from PyQt5.QtWidgets import (QWidget, QMessageBox, QLabel, QPushButton, QHBoxLayout, QVBoxLayout, QLabel, QListWidget)
 from frontend.clientToClient import ClientToClient
-from frontend.getClientsAndGroupsThread import GetClientsAndGroupsThread
 from frontend.groupChat import GroupChat
+from frontend.getClientsAndGroupsThread import GetClientsAndGroupsThread
 import time
 
 
@@ -36,6 +32,7 @@ class Connected(QWidget):
 
         joinBtn = QPushButton('Join', self)
         joinBtn.resize(joinBtn.sizeHint())
+        joinBtn.clicked.connect(self.toGChat)
 
         closeBtn = QPushButton('Close', self)
         closeBtn.resize(closeBtn.sizeHint())
@@ -80,6 +77,7 @@ class Connected(QWidget):
 
         hbox2 = QHBoxLayout()
         self.groupChats = QListWidget()
+        self.selectedGroupIndex = self.groupChats.currentRow()
         # self.groupsList = self.client.getAllGroups()
         # self.groupThread = GetGroupsThread(self.client)
         # self.groupThread.allGroups.connect(self.addGroupsToListDynamically)
@@ -117,6 +115,7 @@ class Connected(QWidget):
         
         self.clientsList = allClients
         self.selectedClientIndex = self.connectedClients.currentRow()
+        self.selectedGroupIndex = self.groupChats.currentRow()
         for (ip, port, cname), clientData in allClients.items():
             # print(ip, port, cname)
             if ((cname == self.client.name) & (ip == self.client.addr.replace("'", "")) & (port == self.client.portAddr)):
@@ -197,18 +196,19 @@ class Connected(QWidget):
     def createGroup(self):
         self.clientAndGroupsThread.stop()
         # self.groupThread.stop()
-        # time.sleep(0.5)
-        self.client.createGroup()
-        group = Group(1, self.client.name)
-        self.gc = GroupChat(group)
-        self.hide()
-        self.gc.show()
-        # Group(1,"Room", self.client) #Need to change 1 to be dynamic ---?????????????????????????
-
-    def toGChat(self, group):
-        self.clientAndGroupsThread.stop()
-        # self.groupThread.stop()
         time.sleep(0.5)
-        self.gc = GroupChat(group)
+        self.client.createGroup()
+        self.clientAndGroupsThread.restart()
+        self.clientAndGroupsThread.start()
+    
+
+    def toGChat(self):
+        self.clientAndGroupsThread.stop()
+        time.sleep(0.5)
+        self.gc = GroupChat(self.client, self.groupsForClient[self.selectedGroupIndex], self, self.clientAndGroupsThread)
         self.hide()
         self.gc.show()
+        # self.groupThread.stop()
+        # self.gc = GroupChat(group)
+        # self.hide()
+        # self.gc.show()

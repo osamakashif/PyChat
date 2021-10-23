@@ -44,6 +44,7 @@ class ChatClient():
             sys.exit(1)
 
     def cleanup(self):
+        send(self.sock, False)
         """Close the connection and wait for the thread to terminate."""
         self.sock.close()
     
@@ -51,6 +52,9 @@ class ChatClient():
         send(self.sock, 2)
         data = receive(self.sock)
         return data
+
+    def transmitForAllClientsAndGroups(self):
+        send(self.sock, 2)
 
     # def getAllGroups(self):
     #     send(self.sock, 4)

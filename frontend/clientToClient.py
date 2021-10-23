@@ -5,6 +5,7 @@ from PyQt5.QtWidgets import (QWidget, QLineEdit, QLabel, QPushButton, QHBoxLayou
 
 from backend.utils import send
 from frontend.getMessagesThread import GetMessagesThread
+from datetime import datetime
 
 class ClientToClient(QWidget):     
     
@@ -47,14 +48,13 @@ class ClientToClient(QWidget):
         if messages[0] == 0:
             if messages[1] == (self.client.addr.replace("'", ""),self.client.portAddr,self.client.name):
                 if messages[2] == self.clientToTalkTo[0]:
-                    self.chatHistory.append(str(self.clientToTalkTo[0][2]) + ": " + messages[3])
-        # self.client.rec
+                    self.chatHistory.append(str(self.clientToTalkTo[0][2]) + " (" + datetime.now().strftime("%H:%M") + ") : " + messages[3])
 
     def sendMsg(self):
         msg = self.sendBox.text()
         self.sendBox.clear()
         toSend = [0, self.clientToTalkTo[0], (self.client.addr.replace("'", ""),self.client.portAddr,self.client.name), msg]
-        self.chatHistory.append("Me: " + msg)
+        self.chatHistory.append("Me (" + datetime.now().strftime("%H:%M") + ") : " + msg)
         self.client.sendMessage(toSend)
 
     def close(self):

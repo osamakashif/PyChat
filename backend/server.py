@@ -110,8 +110,6 @@ class ChatServer(object):
                                     clientInfo = self.clientmap[sock]
                                     self.allClient[(clientInfo[0][0], clientInfo[0][1], clientInfo[1])].append(self.groups)
                                     self.groupOwners[(clientInfo[0][0], clientInfo[0][1], clientInfo[1])].append(self.groups)
-                                if (data == 4):
-                                    send_clients(self.groupOwners, sock)
                             if type(data) == list:
                                 clientInfo = self.clientmap[sock]
                                 if data[0] == 0:
@@ -137,6 +135,12 @@ class ChatServer(object):
                             sock.close()
                             inputs.remove(sock)
                             self.outputs.remove(sock)
+                            clientInfo = self.clientmap[sock]
+                            keyToRemove = (clientInfo[0][0], clientInfo[0][1], clientInfo[1])
+                            self.clientmap.pop(sock)
+                            self.allClient.pop(keyToRemove)
+                            self.clientSockets.pop(keyToRemove)
+                            # self.outputs = []  # list output sockets
 
                             # Sending client leaving information to others
                             # msg = f'\n(Now hung up: Client from {self.get_client_name(sock)})'
@@ -147,6 +151,12 @@ class ChatServer(object):
                         # Remove
                         inputs.remove(sock)
                         self.outputs.remove(sock)
+                        self.clients -= 1
+                        clientInfo = self.clientmap[sock]
+                        keyToRemove = (clientInfo[0][0], clientInfo[0][1], clientInfo[1])
+                        self.clientmap.pop(sock)
+                        self.allClient.pop(keyToRemove)
+                        self.clientSockets.pop(keyToRemove)
 
         self.server.close()
 
