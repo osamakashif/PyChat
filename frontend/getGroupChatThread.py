@@ -16,7 +16,6 @@ class GetGroupChatThread(QThread):
         while self.Finding:
             # self.client.transmitForAllClientsAndGroups()
             data = self.client.receiveData()
-            print(data)
             if type(data[0]) == int:
                 if data[1] != data[2]:
                     self.messages.emit(data)
