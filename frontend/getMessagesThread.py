@@ -14,7 +14,8 @@ class GetMessagesThread(QThread):
     def run(self):
         while self.Finding:
             data = self.client.receiveData()
-            self.messages.emit(data)
+            if data[1] != data[2]:
+                self.messages.emit(data)
     
     def stop(self):
         self.Finding = False
