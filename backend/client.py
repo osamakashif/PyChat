@@ -47,53 +47,61 @@ class ChatClient():
         """Close the connection and wait for the thread to terminate."""
         self.sock.close()
     
-    def getAllClients(self):
+    def getAllClientsAndGroups(self):
         send(self.sock, 2)
         data = receive(self.sock)
         return data
 
-    def getAllGroups(self):
-        send(self.sock, 4)
-        data = receive(self.sock)
-        return data
+    # def getAllGroups(self):
+    #     send(self.sock, 4)
+    #     data = receive(self.sock)
+    #     return data
+
 
     def createGroup(self):
         send(self.sock, 3)
 
-    def run(self):
-        """ Chat client main loop """
-        while self.connected:
-            try:
-                sys.stdout.write(self.prompt)
-                sys.stdout.flush()
+    def sendMessage(self, message):
+        send(self.sock, message)
+    
+    def receiveData(self):
+        data = receive(self.sock)
+        return data
 
-                # Wait for input from stdin and socket
-                # readable, writeable, exceptional = select.select([0, self.sock], [], [])
-                readable, writeable, exceptional = select.select(
-                    [self.sock], [], [])
+    # def run(self):
+    #     """ Chat client main loop """
+    #     while self.connected:
+    #         try:
+    #             sys.stdout.write(self.prompt)
+    #             sys.stdout.flush()
 
-                for sock in readable:
-                    # if sock == 0:
-                    #     data = sys.stdin.readline().strip()
-                    #     if data:
-                    #         send(self.sock, data)
-                    if sock == self.sock:
-                        data = receive(self.sock)
-                        if type(data) == list:
-                            data = receive_clients(data, self.name)
-                        if not data:
-                            print('Client shutting down.')
-                            self.connected = False
-                            break
-                        else:
-                            sys.stdout.write(data + '\n')
-                            sys.stdout.flush()
+    #             # Wait for input from stdin and socket
+    #             # readable, writeable, exceptional = select.select([0, self.sock], [], [])
+    #             readable, writeable, exceptional = select.select(
+    #                 [self.sock], [], [])
 
-            except KeyboardInterrupt:
-                print(" Client interrupted. " "")
-                stop_thread = True
-                self.cleanup()
-                break
+    #             for sock in readable:
+    #                 # if sock == 0:
+    #                 #     data = sys.stdin.readline().strip()
+    #                 #     if data:
+    #                 #         send(self.sock, data)
+    #                 if sock == self.sock:
+    #                     data = receive(self.sock)
+    #                     if type(data) == list:
+    #                         data = receive_clients(data, self.name)
+    #                     if not data:
+    #                         print('Client shutting down.')
+    #                         self.connected = False
+    #                         break
+    #                     else:
+    #                         sys.stdout.write(data + '\n')
+    #                         sys.stdout.flush()
+
+    #         except KeyboardInterrupt:
+    #             print(" Client interrupted. " "")
+    #             stop_thread = True
+    #             self.cleanup()
+    #             break
 
 
 if __name__ == "__main__":

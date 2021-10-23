@@ -3,8 +3,8 @@ __version__ = '1.0.0'
 
 from PyQt5.QtCore import QThread, pyqtSignal
 
-class GetClientThread(QThread):
-    allClients = pyqtSignal(dict)
+class GetClientsAndGroupsThread(QThread):
+    allClientsAndGroups = pyqtSignal(list)
 
     def __init__(self, client):
         super().__init__()
@@ -13,8 +13,11 @@ class GetClientThread(QThread):
     
     def run(self):
         while self.Finding:
-            data = self.client.getAllClients()
-            self.allClients.emit(data)
+            data = self.client.getAllClientsAndGroups()
+            self.allClientsAndGroups.emit(data)
     
     def stop(self):
         self.Finding = False
+
+    def restart(self):
+        self.Finding = True

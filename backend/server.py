@@ -101,8 +101,8 @@ class ChatServer(object):
                                     # client = self.get_client_name(sock)
                                     # client = client.rpartition('@')[0]
                                     # print("Sending a list of clients to '"+self.get_client_name(sock)+"'")
-                                    # send([self.allClient, self.groupOwners], sock)
-                                    send_clients(self.allClient, sock)
+                                    send(sock, [self.allClient, self.groupOwners])
+                                    # send_clients(self.allClient, sock)
                                 if (data == 3):
                                     self.groups = self.groups + 1
                                     clientInfo = self.clientmap[sock]

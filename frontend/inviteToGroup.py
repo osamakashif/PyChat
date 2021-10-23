@@ -26,7 +26,7 @@ class InviteToGroup(QWidget):
         hbox.addWidget(cancelBtn)
         vbox = QVBoxLayout()
         otherClients = QListWidget()
-        vbox.addWidget(QLabel("Connected Clienys"))
+        vbox.addWidget(QLabel("Connected Clients"))
         vbox.addWidget(otherClients)
         vbox.addWidget(hbox)
 

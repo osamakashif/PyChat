@@ -4,10 +4,10 @@ __version__ = '1.0.0'
 from PyQt5.QtWidgets import (QWidget, QMessageBox, QLabel,
                              QPushButton, QHBoxLayout, QVBoxLayout, QLabel, QListWidget)
 from PyQt5.QtCore import QCoreApplication
+from PyQt5.sip import setdeleted
 from backend.group import Group
 from frontend.clientToClient import ClientToClient
-from frontend.getClients import GetClientThread
-from frontend.getGroups import GetGroupsThread
+from frontend.getClientsAndGroupsThread import GetClientsAndGroupsThread
 from frontend.groupChat import GroupChat
 import time
 
@@ -46,17 +46,17 @@ class Connected(QWidget):
         # closeBtn.pressed(client.cleanup)
 
         hbox1 = QHBoxLayout()
-        self.clientsList = self.client.getAllClients()
+        self.clientsList = self.client.getAllClientsAndGroups()
         # print(allClients)
         self.connectedClients = QListWidget()
-        self.clientThread = GetClientThread(self.client)
-        self.clientThread.allClients.connect(self.addClientsToListDynamically)
-        self.clientThread.start()
+        self.clientAndGroupsThread = GetClientsAndGroupsThread(self.client)
+        self.clientAndGroupsThread.allClientsAndGroups.connect(self.addClientsAndGroupsToListDynamically)
+        self.clientAndGroupsThread.start()
         # Send request for list of clientsself.findClientsThread = FindClientsThread(self.client)
         # self.findClientsThread.clients.connect(self.updateServerInfo)
         # self.findClientsThread.invite.connect(self.updateServerInfo)
         # self.findClientsThread.start()
-
+        self.groupsForClient = []
         # for (ip, port, cname), clientData in allClients.items():
         #     if ((cname == self.client.name) & (ip == self.client.addr.replace("'","")) & (port == self.client.portAddr)):
         #         connectedClients.addItem(self.client.name + " (me)")
@@ -111,7 +111,10 @@ class Connected(QWidget):
         else:
             event.ignore()
 
-    def addClientsToListDynamically(self, allClients):
+    def addClientsAndGroupsToListDynamically(self, allClientsAndGroups):
+        allClients = allClientsAndGroups[0]
+        allGroups = allClientsAndGroups[1]
+        
         self.clientsList = allClients
         self.selectedClientIndex = self.connectedClients.currentRow()
         for (ip, port, cname), clientData in allClients.items():
@@ -119,6 +122,9 @@ class Connected(QWidget):
             if ((cname == self.client.name) & (ip == self.client.addr.replace("'", "")) & (port == self.client.portAddr)):
                 toAdd = cname + " (me)"
                 there = False
+                for val in clientData:
+                    if val not in self.groupsForClient:
+                        self.groupsForClient.append(val)
                 for i in range(self.connectedClients.count()):
                     if toAdd == self.connectedClients.item(i).text():
                         there = True
@@ -132,19 +138,29 @@ class Connected(QWidget):
                         there = True
                 if (not there):
                     self.connectedClients.addItem(toAdd)
-    
-    def addGroupsToListDynamically(self, allGroups):
-        self.clientsList = allGroups
-        self.selectedClientIndex = self.groupChats.currentRow()
         for (ip, port, cname), groupData in allGroups.items():
             for val in groupData:
-                toAdd = "Room " + str(val) + " by " + cname
-                there = False
-                for i in range(self.groupChats.count()):
-                    if toAdd == self.groupChats.item(i).text():
-                        there = True
-                if (not there):
-                    self.groupChats.addItem(toAdd)
+                if val in self.groupsForClient:
+                    toAdd = "Room " + str(val) + " by " + cname
+                    there = False
+                    for i in range(self.groupChats.count()):
+                        if toAdd == self.groupChats.item(i).text():
+                            there = True
+                    if (not there):
+                        self.groupChats.addItem(toAdd)
+    
+    # def addGroupsToListDynamically(self, allGroups):
+    #     self.clientsList = allGroups
+    #     self.selectedClientIndex = self.groupChats.currentRow()
+    #     for (ip, port, cname), groupData in allGroups.items():
+    #         for val in groupData:
+    #             toAdd = "Room " + str(val) + " by " + cname
+    #             there = False
+    #             for i in range(self.groupChats.count()):
+    #                 if toAdd == self.groupChats.item(i).text():
+    #                     there = True
+    #             if (not there):
+    #                 self.groupChats.addItem(toAdd)
             # if ((cname == self.client.name) & (ip == self.client.addr.replace("'", "")) & (port == self.client.portAddr)):
             #     toAdd = cname + " (me)"
             #     there = False
@@ -163,7 +179,7 @@ class Connected(QWidget):
             #         self.connectedClients.addItem(toAdd)
 
     def close(self):
-        self.clientThread.stop()
+        self.clientAndGroupsThread.stop()
         # self.groupThread.stop()
         time.sleep(0.5)
         self.client.cleanup()
@@ -171,15 +187,15 @@ class Connected(QWidget):
         self.connection.show()
 
     def toC2C(self, client):
-        self.clientThread.stop()
+        self.clientAndGroupsThread.stop()
         # self.groupThread.stop()
         time.sleep(0.5)
-        self.c2c = ClientToClient(client, self)
+        self.c2c = ClientToClient(self.client, client, self, self.clientAndGroupsThread)
         self.hide()
         self.c2c.show()
 
     def createGroup(self):
-        self.clientThread.stop()
+        self.clientAndGroupsThread.stop()
         # self.groupThread.stop()
         # time.sleep(0.5)
         self.client.createGroup()
@@ -190,7 +206,7 @@ class Connected(QWidget):
         # Group(1,"Room", self.client) #Need to change 1 to be dynamic ---?????????????????????????
 
     def toGChat(self, group):
-        self.clientThread.stop()
+        self.clientAndGroupsThread.stop()
         # self.groupThread.stop()
         time.sleep(0.5)
         self.gc = GroupChat(group)
