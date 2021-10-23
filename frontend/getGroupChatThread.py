@@ -14,13 +14,23 @@ class GetGroupChatThread(QThread):
     
     def run(self):
         while self.Finding:
-            self.client.transmitForAllClientsAndGroups()
+            # self.client.transmitForAllClientsAndGroups()
             data = self.client.receiveData()
+            print(data)
             if type(data[0]) == int:
                 if data[1] != data[2]:
                     self.messages.emit(data)
+                else:
+                    self.Finding = False
             else:
                 self.allClientsAndGroups.emit(data)
+            # clientData = self.client.getAllClientsAndGroups()
+            # self.allClientsAndGroups.emit(clientData)
+            # data = self.client.receiveData()
+            # print(data)
+            # if type(data[0]) == int:
+            #     if data[1] != data[2]:
+            #         self.messages.emit(data)
     
     def stop(self):
         self.Finding = False

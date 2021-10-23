@@ -116,8 +116,20 @@ class ChatServer(object):
                                     if data[2] == (clientInfo[0][0], clientInfo[0][1], clientInfo[1]):
                                         send(self.clientSockets[data[1]], data)
                                 if data[0] == 1:
-                                    send
-                                if data[0] == 2:
+                                    print("In list")
+                                    print(data)
+                                    if (data[1] == data[2]):
+                                        send(sock, data)
+                                    else:
+                                        for (ip, port, name), clientData in self.allClient.items():
+                                            if data[1] in clientData:
+                                                print("Outside check")
+                                                print(data[2])
+                                                if data[2] != (ip, port, name): 
+                                                    print("In data")
+                                                    clientToSendTo = self.clientSockets[(ip, port, name)]
+                                                    send(clientToSendTo, data)
+                                if data[0] == 4:
                                     self.allClient[data[1]].append(data[2])
                                         # clientInfo = data[1]
                                         # self.allClient[(clientInfo[0][0], clientInfo[0][1], clientInfo[1])].append(self.groups)

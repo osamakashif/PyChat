@@ -54,7 +54,7 @@ class InviteToGroup(QWidget):
 
     def invite(self):
         selected = self.remainingClients[self.selectedClientIndex]
-        self.client.sendMessage([2, selected, self.id])
+        self.client.sendMessage([4, selected, self.id])
 
     def close(self):
         self.clientAndGroupsThread.stop()
@@ -62,3 +62,4 @@ class InviteToGroup(QWidget):
         self.groupChat.show()
         self.groupChatThread.restart()
         self.groupChatThread.start()
+        self.client.transmitForAllClientsAndGroups()
