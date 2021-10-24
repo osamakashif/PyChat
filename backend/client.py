@@ -1,10 +1,11 @@
+__author__ = 'Osama Kashif'
+__version__ = '1.0.0'
+
 import socket
 import sys
 import argparse
 import ssl
 
-# from utils import *
-# from utils import *
 from backend.utils import send, receive, receive_clients
 
 SERVER_HOST = 'localhost'
@@ -59,11 +60,6 @@ class ChatClient():
     def transmitForAllClientsAndGroups(self):
         send(self.sock, 2)
 
-    # def getAllGroups(self):
-    #     send(self.sock, 4)
-    #     data = receive(self.sock)
-    #     return data
-
 
     def createGroup(self):
         send(self.sock, 3)
@@ -74,41 +70,6 @@ class ChatClient():
     def receiveData(self):
         data = receive(self.sock)
         return data
-
-    # def run(self):
-    #     """ Chat client main loop """
-    #     while self.connected:
-    #         try:
-    #             sys.stdout.write(self.prompt)
-    #             sys.stdout.flush()
-
-    #             # Wait for input from stdin and socket
-    #             # readable, writeable, exceptional = select.select([0, self.sock], [], [])
-    #             readable, writeable, exceptional = select.select(
-    #                 [self.sock], [], [])
-
-    #             for sock in readable:
-    #                 # if sock == 0:
-    #                 #     data = sys.stdin.readline().strip()
-    #                 #     if data:
-    #                 #         send(self.sock, data)
-    #                 if sock == self.sock:
-    #                     data = receive(self.sock)
-    #                     if type(data) == list:
-    #                         data = receive_clients(data, self.name)
-    #                     if not data:
-    #                         print('Client shutting down.')
-    #                         self.connected = False
-    #                         break
-    #                     else:
-    #                         sys.stdout.write(data + '\n')
-    #                         sys.stdout.flush()
-
-    #         except KeyboardInterrupt:
-    #             print(" Client interrupted. " "")
-    #             stop_thread = True
-    #             self.cleanup()
-    #             break
 
 
 if __name__ == "__main__":

@@ -1,3 +1,6 @@
+__author__ = 'Osama Kashif'
+__version__ = '1.0.0'
+
 import socket
 import pickle
 import struct
@@ -20,18 +23,6 @@ def receive(channel):
     while len(buf) < size:
         buf = channel.recv(size - len(buf))
     return pickle.loads(buf)[0]
-
-# def send_clients(map, channel):
-#     clients = []
-#     for clientItem in map.items():
-#         clients.append(clientItem)
-#     send(channel, clients)
-
-# def send_clients(map, channel):
-#     clients = []
-#     for clientItems, (address, name) in map.items():
-#         clients.append((address, name))
-#     send(channel, clients)
 
 def send_clients(allClients, channel):
     send(channel, allClients)

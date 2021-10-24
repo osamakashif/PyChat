@@ -1,3 +1,6 @@
+__author__ = 'Osama Kashif'
+__version__ = '1.0.0'
+
 import select
 import socket
 import sys
@@ -8,8 +11,6 @@ import ssl
 from utils import *
 
 SERVER_HOST = 'localhost'
-# python server.py --name=server --port=9988
-# python backend/server.py --name=server --port=9988
 
 class ChatServer(object):
     """ An example chat server using select """
@@ -85,34 +86,18 @@ class ChatServer(object):
                     self.allClient[(address[0], address[1], cname)] = []
                     self.groupOwners[(address[0], address[1], cname)] = []
                     self.clientSockets[(address[0], address[1], cname)] = client
-                    # Send joining information to other clients
-                    # msg = f'\n(Connected: New client ({self.clients}) from {self.get_client_name(client)})'
-                    # for output in self.outputs:
-                    #     send(output, msg)
                     self.outputs.append(client)
 
-                # elif sock == sys.stdin:
-                #     # didn't test sys.stdin on windows system
-                #     # handle standard input
-                #     cmd = sys.stdin.readline().strip()
-                #     if cmd == 'list':
-                #         print(self.clientmap.values())
-                #     elif cmd == 'quit':
-                #         running = False
+                
                 else:
                     # handle all other sockets
                     try:
                         data = receive(sock)
                         if data:
-                            # if type(data) == bool:
-                                
+                            
                             if type(data) == int:
                                 if (data == 2):
-                                    # client = self.get_client_name(sock)
-                                    # client = client.rpartition('@')[0]
-                                    # print("Sending a list of clients to '"+self.get_client_name(sock)+"'")
                                     send(sock, [self.allClient, self.groupOwners])
-                                    # send_clients(self.allClient, sock)
                                 if (data == 3):
                                     self.groups = self.groups + 1
                                     clientInfo = self.clientmap[sock]
@@ -134,16 +119,6 @@ class ChatServer(object):
                                                     send(clientToSendTo, data)
                                 if data[0] == 4:
                                     self.allClient[data[1]].append(data[2])
-                                        # clientInfo = data[1]
-                                        # self.allClient[(clientInfo[0][0], clientInfo[0][1], clientInfo[1])].append(self.groups)
-                            # else:
-                            #     # Send as new client's message...
-                            #     msg = f'\n#[{self.get_client_name(sock)}]>> {data}'
-
-                            #     # Send data to all except ourself
-                            #     for output in self.outputs:
-                            #         if output != sock:
-                            #             send(output, msg)
                         else:
                             print(f'Chat server: {sock.fileno()} hung up')
                             self.clients -= 1
@@ -155,13 +130,6 @@ class ChatServer(object):
                             self.clientmap.pop(sock)
                             self.allClient.pop(keyToRemove)
                             self.clientSockets.pop(keyToRemove)
-                            # self.outputs = []  # list output sockets
-
-                            # Sending client leaving information to others
-                            # msg = f'\n(Now hung up: Client from {self.get_client_name(sock)})'
-
-                            # for output in self.outputs:
-                            #     send(output, msg)
                     except socket.error as e:
                         # Remove
                         inputs.remove(sock)

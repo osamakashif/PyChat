@@ -3,8 +3,6 @@ __version__ = '1.0.0'
 
 from PyQt5.QtWidgets import (QWidget, QGridLayout, QLabel, QLineEdit, QPushButton, QMessageBox)
 from PyQt5.QtCore import QCoreApplication, QThread
-import sys
-# from connected import Connected
 from backend.client import ChatClient
 from frontend.connected import Connected
 
@@ -60,20 +58,8 @@ class Connection(QWidget):
         else:
             client = ChatClient(nick, portNumber, ipAddress)
         self.connected = Connected(client, self)
-        # threading.Thread(target=self.connected.show()).start()
-        # threading.Thread(target=self.hide()).start()
         self.ipAdd.clear()
         self.port.clear()
         self.nickname.clear()
         self.connected.show()
         self.hide()
-        # threading.Thread(target=self.connected.show()).start()
-        # thread = QThread()
-        # thread.
-        # self.connected -> moveToThread(thread)
-        # threading.Thread(target=client.run()).start()
-
-# if __name__ == '__main__':
-#     app = QApplication(sys.argv)
-#     ex = Connection()
-#     sys.exit(app.exec_())
