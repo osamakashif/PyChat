@@ -1,9 +1,7 @@
-import select
 import socket
 import sys
-import signal
 import argparse
-import threading
+import ssl
 
 # from utils import *
 # from utils import *
@@ -22,10 +20,15 @@ class ChatClient():
         self.port = port
         self.addr = ""
         self.portAddr = 0
+
+        self.context = ssl.SSLContext(ssl.PROTOCOL_TLSv1_2)
         
         # Connect to server at port
         try:
             self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            self.sock = self.context.wrap_socket(self.sock, server_hostname=host)
+
+
             self.sock.connect((host, self.port))
             print(f'Now connected to chat server@ port {self.port}')
             self.connected = True

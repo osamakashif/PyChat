@@ -53,8 +53,11 @@ class InviteToGroup(QWidget):
                     self.otherClients.addItem(cname)
 
     def invite(self):
+        self.clientAndGroupsThread.stop()
         selected = self.remainingClients[self.selectedClientIndex]
-        self.client.sendMessage([4, selected, self.id])
+        self.client.sendMessage([4, selected, self.id, "work"])
+        self.clientAndGroupsThread.restart()
+        self.clientAndGroupsThread.start()
 
     def close(self):
         self.clientAndGroupsThread.stop()

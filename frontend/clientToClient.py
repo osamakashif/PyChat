@@ -3,7 +3,6 @@ __version__ = '1.0.0'
 
 from PyQt5.QtWidgets import (QWidget, QLineEdit, QLabel, QPushButton, QHBoxLayout, QVBoxLayout, QTextEdit, QLabel)
 
-from backend.utils import send
 from frontend.getMessagesThread import GetMessagesThread
 from datetime import datetime
 
