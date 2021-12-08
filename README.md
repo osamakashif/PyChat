@@ -1,1 +1,1 @@
-# assignment2_pychat-osamakashif
+# PyChat - Chatting application build using Python.
