@@ -1,1 +1,1 @@
-# PyChat - Chatting application build using Python.
+# PyChat - Chatting application built using Python.
